@@ -1,18 +1,43 @@
-        // Docs at http://simpleweatherjs.com
+var pm25;     
+function getPM25() {
+  	$.ajax({
+        //url: "http://api.lib360.net/open/pm2.5.json?city=%E4%B8%8A%E6%B5%B7",
+	//url: "http://www.pm25.in/api/querys/pm2_5.json?city=shanghai&token=5j1znBVAsnSf5xQyNQyq",
+	//url: "http://route.showapi.com/104-41",
+	url: "pm25_proxy.php",
+	dataType: 'JSON',
+	//beforeSend: function(xhr){xhr.setRequestHeader('apikey', '5j1znBVAsnSf5xQyNQyq');},
+	async:false,
+    	type: "GET",
+	error: function (a,b,c){
+		console.log(a);
+		pm25=1;
+	},
+         success: function(msg) { 
+         	msg = JSON.parse(msg);
+         	pm25 = msg.pm25;
+		console.log('get pm25');
+        }
+    });
+}
+
+   // Docs at http://simpleweatherjs.com
         var updateWeather = function () {
           $.simpleWeather({
             location: '',
             woeid: '2151849',
             unit: 'c',
             success: function(weather) {
+		getPM25();
                 var skycons = new Skycons({"color": "white"});
 
                   html = '<canvas id="weather-icon" width="128" height="128"></canvas><h2> '+weather.temp+'&deg;'+weather.units.temp+'</h2>';
                   html += '<div id="region">'+weather.city+', '+weather.region+'</div>';
                   html += '<div>'+weather.currently+'</div>';
                   html += '<div>'+weather.wind.direction+' '+weather.wind.speed+' '+weather.units.speed+'</div>';
-                  html += '<div><i class="fa fa-angle-up"></i>  High '+weather.high + ' <i class="fa fa-angle-down"></i>  Low ' + weather.low + '</div>'
-                  $("#weather").html(html);
+                  html += '<div><i class="fa fa-angle-up"></i>  High '+weather.high + ' <i class="fa fa-angle-down"></i>  Low ' + weather.low + '</div>';
+		  html += '<div>PM2.5 '+pm25+'</div>';
+		$("#weather").html(html);
 
                  switch(parseInt(weather.code)) {
                     case 0:
@@ -185,3 +210,4 @@
             updateWeather();
             setInterval(updateWeather, 300000);
         });
+

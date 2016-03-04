@@ -11,6 +11,7 @@ function pullNews() {
          success: function(msg) { 
          	msg = JSON.parse(msg);
          	contentList = msg.showapi_res_body.pagebean.contentlist;
+		start=0;
 		rollingTitle();
 			console.log('news pulled');
         }
@@ -21,11 +22,12 @@ function rollingTitle() {
 	if (!contentList) {
 		return;
 	}
-	if (start + size == contentList.length) {
-		start = 0;
+	var end = start + size;
+	if (end >= contentList.length) {
+		end = contentList.length;
 	}
  	var news = "";
- 	for (var i = start; i < start + size; i++) {
+ 	for (var i = start; i < end; i++) {
  		var content = contentList[i];
  		if (showDescription) {
 	      	news += content.title + "- " + content.desc + "<br />";
@@ -33,7 +35,10 @@ function rollingTitle() {
 			news += content.title + "<br />";
 		}
  	}
- 	start += 1;
+ 	start += size;
+	if (start >= contentList.length) {
+		start=0;
+	}
 	
  	$('#news').html(news);
 }
